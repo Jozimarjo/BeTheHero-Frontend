@@ -11,5 +11,6 @@ app.use(errors())
  * Driver: usar select
  * Query Builder: table('users').select('*').where() Knex.js
  */
+// app.listen(3333, () => console.log("server na porta 3333"));
 
-app.listen(3333, () => console.log("server na porta 3333"));
+module.exports = app;

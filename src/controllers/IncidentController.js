@@ -20,7 +20,7 @@ module.exports = {
                 'ongs.uf'
             ]);
 
-        res.header('X-Total-Conunt', count['count(*)'])
+        res.header('X-Total-Count', count['count(*)'])
 
         res.json(incidents)
     },
@@ -38,7 +38,6 @@ module.exports = {
         if (incidents.ong_id !== ong_id) return res.status(401).json({ error: 'Operation not permitted' });
 
         await connection('incidents').where('id', id).delete();
-        console.log('deletado')
         return res.send();
     },
 

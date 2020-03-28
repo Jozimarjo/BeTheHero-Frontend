@@ -1,55 +1,58 @@
-const crypto = require('crypto');
-const connection = require('../database/index');
+import connection from '../database/index';
 
-module.exports = {
+class IncidentController {
+  async index(req, res) {
+    const { page = 1 } = req.query;
+    const [count] = await connection('incidents').count();
 
-    async index(req, res) {
-        const { page = 1 } = req.query;
-        const [count] = await connection('incidents').count();
+    const incidents = await connection('incidents')
+      .join('ongs', 'ongs.id', '=', 'incidents.ong_id')
+      .limit(5)
+      .offset((page - 1) * 5)
+      .select([
+        'incidents.*',
+        'ongs.name',
+        'ongs.email',
+        'ongs.whatsapp',
+        'ongs.city',
+        'ongs.uf',
+      ]);
 
-        const incidents = await connection('incidents')
-            .join('ongs', 'ongs.id', '=', 'incidents.ong_id')
-            .limit(5)
-            .offset((page - 1) * 5)
-            .select([
-                'incidents.*',
-                'ongs.name',
-                'ongs.email',
-                'ongs.whatsapp',
-                'ongs.city',
-                'ongs.uf'
-            ]);
+    res.header('X-Total-Count', count['count(*)']);
 
-        res.header('X-Total-Count', count['count(*)'])
+    res.json(incidents);
+  }
 
-        res.json(incidents)
-    },
+  async delete(req, res) {
+    const { id } = req.params;
+    const ong_id = req.headers.authorization;
 
-    async delete(req, res) {
-        const { id } = req.params;
-        const ong_id = req.headers.authorization;
+    const incidents = await connection('incidents')
+      .where('id', id)
+      .select('')
+      .select('ong_id')
+      .first();
 
+    if (incidents.ong_id !== ong_id)
+      return res.status(401).json({ error: 'Operation not permitted' });
 
-        const incidents = await connection('incidents').where('id', id)
-            .select('')
-            .select('ong_id')
-            .first();
+    await connection('incidents').where('id', id).delete();
+    return res.send();
+  }
 
-        if (incidents.ong_id !== ong_id) return res.status(401).json({ error: 'Operation not permitted' });
+  async cretate(req, res) {
+    const { title, description, value } = req.body;
+    const ong_id = req.headers.authorization;
 
-        await connection('incidents').where('id', id).delete();
-        return res.send();
-    },
+    const [id] = await connection('incidents').insert({
+      title,
+      ong_id,
+      description,
+      value,
+    });
 
-    async cretate(req, res) {
-        const { title, description, value } = req.body;
-        const ong_id = req.headers.authorization;
-
-        const [id] = await connection('incidents').insert({
-            title, ong_id, description, value
-        })
-
-        return res.json({ id })
-    }
-
+    return res.json({ id });
+  }
 }
+
+export default new IncidentController();

@@ -1,9 +1,9 @@
-import generateUniqueId from "../utils/generateUniqueId";
-import connection from "../database/index";
+import generateUniqueId from '../utils/generateUniqueId';
+import connection from '../database/index';
 
 class OngController {
   async index(req, res) {
-    const ongs = await connection("ongs").select("*");
+    const ongs = await connection('ongs').select('*');
     res.json(ongs);
   }
 
@@ -12,13 +12,13 @@ class OngController {
 
     const id = generateUniqueId();
 
-    await connection("ongs").insert({
+    await connection('ongs').insert({
       id,
       name,
       email,
       whatsapp,
       city,
-      uf
+      uf,
     });
 
     return res.json({ id });

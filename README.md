@@ -13,6 +13,9 @@ Back-end do be The Hero
 - Prettier: "code formatter", manter o padrao de codigo
 - Sucrase : "Transpilador .js , interpreta codigo java script da nova sintaxe como ("import, exports").
 
+
+## :video_game: Como inicializar este projeto
+
 ```bash
 # Clone this repository
 $ git clone https://github.com/Jozimarjo/BeTheHero_backend
